@@ -212,9 +212,8 @@ export const HeaderBar = ({ rgbColor, name, perfilImg }) => {
           </IconButton>
           <Button
             variant="h6"
-            noWrap
             component="div"
-            sx={{ display: { xs: 'none', sm: 'block', fontWeight: 500 } }}
+            sx={{ display: { xs: 'none', sm: 'block', fontWeight: 500 }, whiteSpace: "nowrap" }}
             onClick={() => { goToHomePage(navigate) }}
           >
             Social

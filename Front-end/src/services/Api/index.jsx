@@ -63,10 +63,11 @@ export const PostUserFeed =  async (formData, config) => {
 };
 export const GetInfoUser =  async (token) => {
   try {
-      const response = await axios.get(`${BASE_URL}users`, { headers: { authorization: token }})      
+      const response = await axios.get(`${BASE_URL}users/perfil`, { headers: { authorization: token }})      
       return response.data
     } catch(error){
       console.log(error.response)
+      return null
     } 
 };
 export const GetPerfilUser = async (idUser) => {

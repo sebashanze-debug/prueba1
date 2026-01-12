@@ -5,7 +5,7 @@ import { GetFeed, GetInfoUser, PostLogin, PostSocialLogin } from "../../services
 export const AuthContext = createContext({})
 
 export const AuthProvider = ({ children }) => {
-  const [user, setUser] = useState(null)
+  const [user, setUser] = useState(() => window.localStorage.getItem("Token"))
   const [headerBarUserInfo, setHeaderBarUserInfo] = useState(null)
   const [feed, setFeed] = useState(null)
   const [refreshPage, setRefreshPage] = useState(true)
@@ -38,11 +38,15 @@ export const AuthProvider = ({ children }) => {
     setRefreshPage(!refreshPage)
   }
   useEffect(() => {
-    const token = window.localStorage.getItem('Token')
+    const token = user || window.localStorage.getItem('Token')
 
     const InfoUser = async () => {
-      const getInfoUser = await GetInfoUser(user || token)
-      setHeaderBarUserInfo(getInfoUser[0])
+      if (token) {
+        const getInfoUser = await GetInfoUser(token)
+        setHeaderBarUserInfo(getInfoUser?.user || null)
+      } else {
+        setHeaderBarUserInfo(null)
+      }
       const getFeed = await GetFeed()
       setFeed(getFeed)
     }

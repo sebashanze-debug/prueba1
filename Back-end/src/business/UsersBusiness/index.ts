@@ -22,15 +22,17 @@ import { PostsDataBase } from "../../database/postsDataBase"
       
     ) { }
     
-    public getPerfilUserBussines = async (idUser: string | undefined) => {
-      if(!idUser){
+    public getPerfilUserBussines = async (idUserToken: string | undefined) => {
+      if(!idUserToken){
         throw new HeadersError()
       }
-      
+
+      const payload = this.authenticator.getTokenPayload(idUserToken)
+      const idUser = payload?.id || idUserToken
+
       const Allpost = await this.postsDataBase.getAllPostsDataBase()
 
       const postUser = Allpost?.filter((item) => { return item?.idUser === idUser})
-
 
       const response = await this.usersDataBase.getPerfilUserDataBase(idUser,postUser)
       
