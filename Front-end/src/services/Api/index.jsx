@@ -28,6 +28,29 @@ export const PostSignup =  async (name, email, password) => {
       alert(error.response.data.message)
     } 
 };
+export const PostSocialLogin = async (name, email, password) => {
+  try {
+    const body = {
+      name,
+      email,
+      password,
+    }
+    const response = await axios.post(`${BASE_URL}users/register`, body)
+    return response.data
+  } catch (error) {
+    const status = error?.response?.status
+    if (status === 409) {
+      try {
+        const response = await axios.post(`${BASE_URL}users/login`, { email, password })
+        return response.data
+      } catch (loginError) {
+        alert(loginError?.response?.data?.message || "Algo deu errado")
+      }
+      return
+    }
+    alert(error?.response?.data?.message || "Algo deu errado")
+  }
+};
 export const PostUserFeed =  async (formData, config) => {
   console.log(formData)
   try {

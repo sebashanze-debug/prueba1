@@ -24,17 +24,27 @@ export const Register = () => {
   const FacebookLogar = async () => {
     const auth = getAuth(FirebaseConfigChave())
     const provider = new FacebookAuthProvider()
-    const { _tokenResponse } = await signInWithPopup(auth, provider)
-    const { firstName, email, idToken } = _tokenResponse
-    await PostSignup(firstName, email, idToken)
+    const { user } = await signInWithPopup(auth, provider)
+    const { displayName, email, uid } = user
+    if (!email || !uid) {
+      alert("No se pudo obtener el email del proveedor")
+      return
+    }
+    const name = displayName || email.split("@")[0]
+    await PostSignup(name, email, uid)
   }
   const GoogleLogar = async () => {
     const auth = getAuth(FirebaseConfigChave())
     const provider = new GoogleAuthProvider()
-    const { _tokenResponse } = await signInWithPopup(auth, provider)
-    const { emailVerified, firstName, email, idToken } = _tokenResponse
+    const { user } = await signInWithPopup(auth, provider)
+    const { emailVerified, displayName, email, uid } = user
+    if (!email || !uid) {
+      alert("No se pudo obtener el email del proveedor")
+      return
+    }
     if (emailVerified) {
-      await PostSignup(firstName, email, idToken)
+      const name = displayName || email.split("@")[0]
+      await PostSignup(name, email, uid)
     }
   }
   return (

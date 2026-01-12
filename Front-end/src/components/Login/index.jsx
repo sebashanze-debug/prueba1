@@ -16,7 +16,7 @@ import { FirebaseConfigChave } from "../../services/firebase";
 
 export const Login = () => {
   const navigate = useNavigate();
-  const { signin } = useContext(AuthContext)
+  const { signin, signinSocial } = useContext(AuthContext)
   const [loading, setLoading] = useState(false);
   const [checked, setChecked] = useState(true);
 
@@ -50,21 +50,31 @@ export const Login = () => {
   const GoogleLogar = async () => {
     const auth = getAuth(FirebaseConfigChave())
     const provider = new GoogleAuthProvider()
-    const { _tokenResponse } = await signInWithPopup(auth, provider)
-    const { emailVerified, email, idToken } = _tokenResponse
+    const { user } = await signInWithPopup(auth, provider)
+    const { emailVerified, displayName, email, uid } = user
+    if (!email || !uid) {
+      alert("No se pudo obtener el email del proveedor")
+      return
+    }
     if (emailVerified) {
+      const name = displayName || email.split("@")[0]
       setLoading(false);
-      await signin(email, idToken, navigate, checked)
+      await signinSocial(name, email, uid, navigate, checked)
       setLoading(true);
     }
   }
   const FacebookLogar = async () => {
     const auth = getAuth(FirebaseConfigChave())
     const provider = new FacebookAuthProvider()
-    const { _tokenResponse } = await signInWithPopup(auth, provider)
-    const { email, idToken } = _tokenResponse
+    const { user } = await signInWithPopup(auth, provider)
+    const { displayName, email, uid } = user
+    if (!email || !uid) {
+      alert("No se pudo obtener el email del proveedor")
+      return
+    }
+    const name = displayName || email.split("@")[0]
     setLoading(false);
-    await signin(email, idToken, navigate, checked)
+    await signinSocial(name, email, uid, navigate, checked)
     setLoading(true);
   }
 

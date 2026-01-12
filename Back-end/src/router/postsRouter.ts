@@ -1,5 +1,7 @@
 import { Router } from 'express'
 import multer from 'multer'
+import fs from 'fs'
+import path from 'path'
 import { PostsBusiness } from '../business/postsBusiness'
 import { PostsController } from '../controller/postsController'
 import { UsersDataBase } from '../database/UsersDataBase'
@@ -10,8 +12,20 @@ import { UploadImage } from '../services/firebase'
 
 export const postsRouter = Router()
 
+const uploadsDir = path.join(process.cwd(), "uploads")
+fs.mkdirSync(uploadsDir, { recursive: true })
+
 const Multer = multer({
-    storage: multer.memoryStorage()
+    storage: multer.diskStorage({
+        destination: (_req, _file, cb) => {
+            cb(null, uploadsDir)
+        },
+        filename: (_req, file, cb) => {
+            const ext = path.extname(file.originalname)
+            const safeName = `${Date.now()}-${Math.round(Math.random() * 1e9)}${ext}`
+            cb(null, safeName)
+        },
+    })
 })
 
 const postsController = new PostsController(
@@ -24,5 +38,3 @@ const postsController = new PostsController(
 )
 postsRouter.get("/", postsController.getPostsController)
 postsRouter.post("/", Multer.single("img"), UploadImage , postsController.postPostsController)
-
-
